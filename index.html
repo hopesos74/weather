@@ -121,8 +121,9 @@
                 var hours = date1.getHours();
                 $("#hour"+ i + "").append("&nbsp;" + hours + "h");
                 //$("#hour").append("&nbsp;" + hours + "시");
-                //$("#hourtemp").append("&nbsp;" + m.hourly[i].temp + "°");
+                
                 $("#icon" + i + "").append("<i class='wi wi-owm-" + m.hourly[i].weather[0].id + "'></i>");
+                $("#temp" + i + "").append("" + m.hourly[i].temp + "°");
               }
 
               var labels = new Array();
@@ -394,8 +395,9 @@
           <div class="card-body">
             <canvas id="myChart" style="width:100%;height:250px;"></canvas>
           </div>
-          <div class="card-footer">
-            <table style="width: 95%;text-align:center;margin-left: 1‒;margin-left: 8px; ">
+          
+          <div class="card-footer" style="padding-left: 0px; padding-right: 0px;">
+            <table style="width: 100%;text-align:center;margin-left: 0px;margin-left: 0px; ">
               <tbody>
                 <tr>
                   <td id="hour0"></td>
@@ -422,6 +424,19 @@
                   <td id="icon8"></td>
                   <td id="icon9"></td>
                 </tr>
+                <tr>
+                  <td id="temp0" style="font-size:0.9rem;"></td>
+                  <td id="temp1" style="font-size:0.9rem;"></td>
+                  <td id="temp2" style="font-size:0.9rem;"></td>
+                  <td id="temp3" style="font-size:0.9rem;"></td>
+                  <td id="temp4" style="font-size:0.9rem;"></td>
+                  <td id="temp5" style="font-size:0.9rem;"></td>
+                  <td id="temp6" style="font-size:0.9rem;"></td>
+                  <td id="temp7" style="font-size:0.9rem;"></td>
+                  <td id="temp8" style="font-size:0.9rem;"></td>
+                  <td id="temp9" style="font-size:0.9rem;"></td>
+                </tr>
+
               </tbody>
             </table>
           </div>
