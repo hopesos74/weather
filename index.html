@@ -257,7 +257,7 @@
                 month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
                 var day = date.getDate();                   //d
                 day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
-                var hour = date.getHours();                   //d
+                var hour = (date.getHours() - 1);                   //d
                 hour = hour >= 10 ? hour : '0' + hour;
                 var min = date.getMinutes();                   //d
                 min = min >= 10 ? min : '0' + min;
@@ -281,7 +281,7 @@
               //$("#air_pm").append("측정시간 : " + pm.data.time.s + "<br>");
               $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
               $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#air_pm").append("측정시간 : " + air_pm_date + "<br>");
+              $("#time").append("측정시간 : " + air_pm_date + "<br>");
 
 
             });
@@ -372,6 +372,7 @@
         <p id="address"></p>
         <p id="temp"></p>
         <p id="air_pm"></p>
+        <p id="time"></p>
       </div>
       <!-- /.col-md-4 -->
     </div>
