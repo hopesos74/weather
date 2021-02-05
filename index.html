@@ -106,8 +106,11 @@
               console.log(m);
 
               $("#temp").append("온도 : " + m.hourly[0].temp + "℃, 습도 : " + m.hourly[0].humidity + "%,&nbsp;");
+              $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity + "%");
               $("#temp").append("&nbsp;<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
-              $("#temp").append("&nbsp;" + m.hourly[0].weather[0].description + "");
+              $("#top_icon").append("<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
+              $("#temp").append("&nbsp;" + m.hourly[0].weather[0].description + "<br>");
+              $("#temp").append("최대온도 : " + m.daily[0].temp.max + "℃, 최저온도 : " + m.daily[0].temp.min + "℃&nbsp;");
 
               var labels = new Array();
               var hourly_temp = new Array();
@@ -115,7 +118,7 @@
               var daily_temp_max = new Array();
               var daily_temp_min = new Array();
 
-              for (i = 0; i < 10; i++) {
+              for (i = 0; i < 7; i++) {
                 var date1 = new Date(m.hourly[i].dt * 1000);
 
                 var hours = date1.getHours();
@@ -134,7 +137,7 @@
 
               }
 
-              for (i = 0; i < 8; i++) {
+              for (i = 0; i < 7; i++) {
                 var daily_day = new Date(m.daily[i].dt * 1000);
                 daily_day = daily_day.getDate();
                 daily_day = daily_day + "일";
@@ -295,17 +298,13 @@
 
               });
 
-
-
-
-
             });
 
 
 
           $.ajax({
             method: "GET",
-            url: "https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
+            url: "https://api.openweathermap.org/data/2.5/air_pollution?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
 
           })
             .done(function (air_pm) {
@@ -347,21 +346,55 @@
                 var pm10_icon = "<<i class='far fa-tired'></i>"
               };
 
+              function getFormatDate(date) {
+                var year = date.getFullYear();              //yyyy
+                var month = (1 + date.getMonth());          //M
+                month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
+                var day = date.getDate();                   //d
+                day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
+                var hour = (date.getHours()-1);                   //d
+                hour = hour >= 10 ? hour : '0' + hour;
+                var min = date.getMinutes();                   //d
+                min = min >= 10 ? min : '0' + min;
+                
+                return year + '-' + month + '-' + day + ',&nbsp;' + hour + ':' + min+ ':00';       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+              }
+
+              var air_pm_date = new Date(air_pm.list[0].dt * 1000);
+              air_pm_date = getFormatDate(air_pm_date);
+
+
+              $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
+              $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
+                //$("#top_pm25").append("PM2.5 : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
+              //$("#top_pm10").append("PM10 : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
+              $("#time").append("측정시간 : " + air_pm_date + "<br>");
+
+            });
+
+          $.ajax({
+            method: "GET",
+            url: "https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
+
+          })
+
+
+            .done(function (daily_pm) {
+              console.log(daily_pm);
+
               var daily_pm25 = new Array();
               var daily_pm10 = new Array();
               var daily_pm_labels = new Array();
 
               for (i = 0; i < 168; i++) {
-                var daily_pm_day = new Date(air_pm.list[i].dt * 1000);
+                var daily_pm_day = new Date(daily_pm.list[i].dt * 1000);
                 daily_pm_day = daily_pm_day.getDate();
                 daily_pm_labels.push(daily_pm_day);
-                daily_pm25.push(air_pm.list[i].components.pm2_5);
-                daily_pm10.push(air_pm.list[i].components.pm10);
+                daily_pm25.push(daily_pm.list[i].components.pm2_5);
+                daily_pm10.push(daily_pm.list[i].components.pm10);
               }
               console.log(daily_pm25);
               console.log(daily_pm10);
-
-
 
 
               var ctx = document.getElementById('daily_pm');
@@ -371,33 +404,28 @@
                   datasets: [{
                     label: 'PM2.5',
                     data: daily_pm25,
+                    radius: 0,
+
                     backgroundColor: [
                       'rgba(0, 0, 0, 0)'
                     ],
                     borderColor: [
                       'rgba(255, 99, 132, 1)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)'
+
                     ],
                     borderWidth: 1
 
                   }, {
                     label: 'PM10',
                     data: daily_pm10,
+                    radius: 0,
 
                     backgroundColor: [
                       'rgba(0, 0, 0, 0)'
                     ],
                     borderColor: [
                       'rgba(33, 150, 243, 1)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)',
-                      'rgba(0, 0, 0, 0)'
+
                     ],
                     borderWidth: 1,
 
@@ -407,33 +435,9 @@
                   labels: daily_pm_labels
                 },
                 //options: options
-
-
+              
               });
-
-              function getFormatDate(date) {
-                var year = date.getFullYear();              //yyyy
-                var month = (1 + date.getMonth());          //M
-                month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
-                var day = date.getDate();                   //d
-                day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
-                var hour = (date.getHours() - 1);                   //d
-                hour = hour >= 10 ? hour : '0' + hour;
-                var min = date.getMinutes();                   //d
-                min = min >= 10 ? min : '0' + min;
-                return year + '-' + month + '-' + day + ',&nbsp;' + hour + ':' + min;       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
-              }
-
-              var air_pm_date = new Date(air_pm.list[54].dt * 1000);
-              air_pm_date = getFormatDate(air_pm_date);
-
-
-              $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[54].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[54].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#time").append("측정시간 : " + air_pm_date + "<br>");
-
             });
-
         });
       } else {
         alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.")
@@ -446,7 +450,13 @@
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="#">날씨 어때?</a>
+      <a class="navbar-brand">날씨 어때?</a>
+      <div>
+              <span id="top_temp" class="navbar-brand" style="font-size:1rem;"></span>
+              <span id="top_icon" class="navbar-brand" style="font-size:1rem;"></span>
+           
+        </ul>
+      </div>
 
 
     </div>
@@ -464,13 +474,12 @@
 
       <!-- /.col-lg-8 -->
       <div class="col-lg-5" style="margin-top: 15px;">
-        <span id="latitude"></span><br>
-        <span id="longitude"></span>
-        <br><br>
-        <p id="address"></p>
         <p id="temp"></p>
         <p id="air_pm"></p>
         <p id="time"></p>
+        <span id="latitude"></span><br>
+        <span id="longitude"></span>
+        <p id="address"></p>
       </div>
       <!-- /.col-md-4 -->
     </div>
@@ -497,9 +506,7 @@
                   <td id="hour4" style="font-size:0.8rem;"></td>
                   <td id="hour5" style="font-size:0.8rem;"></td>
                   <td id="hour6" style="font-size:0.8rem;"></td>
-                  <td id="hour7" style="font-size:0.8rem;"></td>
-                  <td id="hour8" style="font-size:0.8rem;"></td>
-                  <td id="hour9" style="font-size:0.8rem;"></td>
+           
                 </tr>
 
                 <tr>
@@ -510,9 +517,7 @@
                   <td id="icon4"></td>
                   <td id="icon5"></td>
                   <td id="icon6"></td>
-                  <td id="icon7"></td>
-                  <td id="icon8"></td>
-                  <td id="icon9"></td>
+            
                 </tr>
                 <tr>
                   <td id="temp0" style="font-size:0.8rem;"></td>
@@ -522,9 +527,7 @@
                   <td id="temp4" style="font-size:0.8rem;"></td>
                   <td id="temp5" style="font-size:0.8rem;"></td>
                   <td id="temp6" style="font-size:0.8rem;"></td>
-                  <td id="temp7" style="font-size:0.8rem;"></td>
-                  <td id="temp8" style="font-size:0.8rem;"></td>
-                  <td id="temp9" style="font-size:0.8rem;"></td>
+              
                 </tr>
 
               </tbody>
@@ -538,7 +541,7 @@
           <div class="card-body">
             <canvas id="daily_temp" style="width:100%;height:250px;"></canvas>
           </div>
-          <div class="card-footer">
+          <div class="card-footer"  style="padding-left: 0px; padding-right: 0px;">
             <table style="width: 100%;text-align:center;margin-left: 0px;margin-left: 0px; ">
               <tbody>
                 <tr>
@@ -549,7 +552,7 @@
                   <td id="day4" style="font-size:0.8rem;"></td>
                   <td id="day5" style="font-size:0.8rem;"></td>
                   <td id="day6" style="font-size:0.8rem;"></td>
-                  <td id="day7" style="font-size:0.8rem;"></td>
+                  
                 </tr>
 
                 <tr>
@@ -560,7 +563,7 @@
                   <td id="temp_max4" style="font-size:0.8rem;"></td>
                   <td id="temp_max5" style="font-size:0.8rem;"></td>
                   <td id="temp_max6" style="font-size:0.8rem;"></td>
-                  <td id="temp_max7" style="font-size:0.8rem;"></td>
+                 
                 </tr>
                 <tr>
                   <td id="day_icon0"></td>
@@ -570,7 +573,7 @@
                   <td id="day_icon4"></td>
                   <td id="day_icon5"></td>
                   <td id="day_icon6"></td>
-                  <td id="day_icon7"></td>
+                
                 </tr>
                 <tr>
                   <td id="temp_min0" style="font-size:0.8rem;"></td>
@@ -580,7 +583,7 @@
                   <td id="temp_min4" style="font-size:0.8rem;"></td>
                   <td id="temp_min5" style="font-size:0.8rem;"></td>
                   <td id="temp_min6" style="font-size:0.8rem;"></td>
-                  <td id="temp_min7" style="font-size:0.8rem;"></td>
+              
 
                 </tr>
 
@@ -611,9 +614,9 @@
   <!-- /.container -->
 
   <!-- Footer -->
-  <footer class="py-5 bg-dark">
+  <footer class="py-2 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2020</p>
+      <p class="m-0 text-center text-white">배움 받은 곳 : 조코딩!!</p>
     </div>
     <!-- /.container -->
   </footer>
