@@ -6,3 +6,15 @@
 body {
   padding-top: 56px;
 }
+table {
+  width: 100%;
+  border-top: 1px solid #444444;
+  border-collapse: collapse;
+  text-align:center;
+}
+th, td {
+  border-bottom: 1px solid #444444;
+  padding: 0px;
+  text-align: cneter;
+  font-size:0.8rem;
+}
