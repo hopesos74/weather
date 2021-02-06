@@ -44,29 +44,51 @@
         navigator.geolocation.getCurrentPosition(function (pos) {
           $('#latitude').html("위도 : " + pos.coords.latitude);     // 위도
           $('#longitude').html("경도 : " + pos.coords.longitude); // 경도
-          console.log(pos);
+
           var x = pos.coords.latitude;
           var y = pos.coords.longitude;
+          text_x = x - 0.0003;
+          text_y = y - 0.0002;
 
 
-          // 이미지 지도에서 마커가 표시될 위치입니다 
-          var markerPosition = new kakao.maps.LatLng(x, y);
 
-          // 이미지 지도에 표시할 마커입니다
-          // 이미지 지도에 표시할 마커는 Object 형태입니다
-          var marker = {
-            position: markerPosition
-          };
+          var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng(x, y), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };
 
-          var staticMapContainer = document.getElementById('Map'), // 이미지 지도를 표시할 div  
-            staticMapOption = {
-              center: new kakao.maps.LatLng(x, y), // 이미지 지도의 중심좌표
-              level: 3, // 이미지 지도의 확대 레벨
-              marker: marker // 이미지 지도에 표시할 마커 
-            };
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
-          // 이미지 지도를 생성합니다
-          var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+// 마커가 표시될 위치입니다 
+var markerPosition  = new kakao.maps.LatLng(x, y); 
+
+// 마커를 생성합니다
+var marker = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker.setMap(map);
+
+
+// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+var mapTypeControl = new kakao.maps.MapTypeControl();
+
+// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+// kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+var zoomControl = new kakao.maps.ZoomControl();
+
+map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+// 지도에 교통정보를 표시하도록 지도타입을 추가합니다
+map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);    
+
+// 아래 코드는 위에서 추가한 교통정보 지도타입을 제거합니다
+// map.removeOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);    
 
           $.ajax({
             method: "GET",
@@ -106,9 +128,9 @@
               console.log(m);
 
               $("#temp").append("온도 : " + m.hourly[0].temp + "℃, 습도 : " + m.hourly[0].humidity + "%,&nbsp;");
-              $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity + "%");
+              $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity + "%&nbsp;");
               $("#temp").append("&nbsp;<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
-              $("#top_icon").append("<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
+              $("#top_temp").append("<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
               $("#temp").append("&nbsp;" + m.hourly[0].weather[0].description + "<br>");
               $("#temp").append("최대온도 : " + m.daily[0].temp.max + "℃, 최저온도 : " + m.daily[0].temp.min + "℃&nbsp;");
 
@@ -352,21 +374,23 @@
                 month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
                 var day = date.getDate();                   //d
                 day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
-                var hour = (date.getHours()-1);                   //d
+                var hour = (date.getHours());                   //d
                 hour = hour >= 10 ? hour : '0' + hour;
                 var min = date.getMinutes();                   //d
                 min = min >= 10 ? min : '0' + min;
-                
-                return year + '-' + month + '-' + day + ',&nbsp;' + hour + ':' + min+ ':00';       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+
+                return year + '-' + month + '-' + day + ',&nbsp;' + hour + ':' + min + ':00';       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
               }
 
               var air_pm_date = new Date(air_pm.list[0].dt * 1000);
+              console.log(air_pm_date);
               air_pm_date = getFormatDate(air_pm_date);
 
 
               $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
               $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
-                //$("#top_pm25").append("PM2.5 : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
+              $("#top_air_pm").append("<SPAN STYLE='background-color:" + color + ";'>pm2.5</span>&nbsp;<span style='background-color:" + pm10_color + ";'>PM10</span>");
+              //$("#top_pm25").append("PM2.5 : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
               //$("#top_pm10").append("PM10 : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
               $("#time").append("측정시간 : " + air_pm_date + "<br>");
 
@@ -392,9 +416,10 @@
                 daily_pm_labels.push(daily_pm_day);
                 daily_pm25.push(daily_pm.list[i].components.pm2_5);
                 daily_pm10.push(daily_pm.list[i].components.pm10);
+
               }
-              console.log(daily_pm25);
-              console.log(daily_pm10);
+
+
 
 
               var ctx = document.getElementById('daily_pm');
@@ -435,7 +460,7 @@
                   labels: daily_pm_labels
                 },
                 //options: options
-              
+
               });
             });
         });
@@ -452,9 +477,9 @@
     <div class="container">
       <a class="navbar-brand">날씨 어때?</a>
       <div>
-              <span id="top_temp" class="navbar-brand" style="font-size:1rem;"></span>
-              <span id="top_icon" class="navbar-brand" style="font-size:1rem;"></span>
-           
+        <span id="top_temp" class="navbar-brand" style="font-size:1rem;"></span>
+        <span id="top_air_pm" class="navbar-brand" style="font-size:1rem;"></span>
+
         </ul>
       </div>
 
@@ -468,7 +493,7 @@
     <!-- Heading Row -->
     <div class="row align-items-center my-5">
       <div class="col-lg-7">
-        <div id="Map" style="width:100%;height:300px;"></div>
+        <div id="map" style="width:100%;height:300px;"></div>
       </div>
 
 
@@ -506,7 +531,7 @@
                   <td id="hour4" style="font-size:0.8rem;"></td>
                   <td id="hour5" style="font-size:0.8rem;"></td>
                   <td id="hour6" style="font-size:0.8rem;"></td>
-           
+
                 </tr>
 
                 <tr>
@@ -517,7 +542,7 @@
                   <td id="icon4"></td>
                   <td id="icon5"></td>
                   <td id="icon6"></td>
-            
+
                 </tr>
                 <tr>
                   <td id="temp0" style="font-size:0.8rem;"></td>
@@ -527,7 +552,7 @@
                   <td id="temp4" style="font-size:0.8rem;"></td>
                   <td id="temp5" style="font-size:0.8rem;"></td>
                   <td id="temp6" style="font-size:0.8rem;"></td>
-              
+
                 </tr>
 
               </tbody>
@@ -541,7 +566,7 @@
           <div class="card-body">
             <canvas id="daily_temp" style="width:100%;height:250px;"></canvas>
           </div>
-          <div class="card-footer"  style="padding-left: 0px; padding-right: 0px;">
+          <div class="card-footer" style="padding-left: 0px; padding-right: 0px;">
             <table style="width: 100%;text-align:center;margin-left: 0px;margin-left: 0px; ">
               <tbody>
                 <tr>
@@ -552,7 +577,7 @@
                   <td id="day4" style="font-size:0.8rem;"></td>
                   <td id="day5" style="font-size:0.8rem;"></td>
                   <td id="day6" style="font-size:0.8rem;"></td>
-                  
+
                 </tr>
 
                 <tr>
@@ -563,7 +588,7 @@
                   <td id="temp_max4" style="font-size:0.8rem;"></td>
                   <td id="temp_max5" style="font-size:0.8rem;"></td>
                   <td id="temp_max6" style="font-size:0.8rem;"></td>
-                 
+
                 </tr>
                 <tr>
                   <td id="day_icon0"></td>
@@ -573,7 +598,7 @@
                   <td id="day_icon4"></td>
                   <td id="day_icon5"></td>
                   <td id="day_icon6"></td>
-                
+
                 </tr>
                 <tr>
                   <td id="temp_min0" style="font-size:0.8rem;"></td>
@@ -583,7 +608,7 @@
                   <td id="temp_min4" style="font-size:0.8rem;"></td>
                   <td id="temp_min5" style="font-size:0.8rem;"></td>
                   <td id="temp_min6" style="font-size:0.8rem;"></td>
-              
+
 
                 </tr>
 
@@ -601,18 +626,30 @@
             <canvas id="daily_pm" style="width:100%;height:250px;"></canvas>
           </div>
           <div class="card-footer">
-<table>
-  <tr>
-    <td>등급</td><td style="background-color: #0080FF">좋음</td><td style="background-color: #3ADF00">보통</td><td  style="background-color: #FF8000">나쁨</td><td style="background-color: #FE2E2E">매우나쁨</td>
-  </tr>
-  <tr>
-    <td>pm2.5</td><td style="background-color: #0080FF">0-15</td><td style="background-color: #3ADF00">16-35</td><td style="background-color: #FF8000">36-75</td><td style="background-color: #FE2E2E">75-</td>
-  </tr>
-  <tr>
-    <td>pm10</td><td style="background-color: #0080FF">0-30</td><td style="background-color: #3ADF00">31-80</td> <td style="background-color: #FF8000">81-150</td><td style="background-color: #FE2E2E">151-</td>
-  </tr>
+            <table>
+              <tr>
+                <td>등급</td>
+                <td style="background-color: #0080FF">좋음</td>
+                <td style="background-color: #3ADF00">보통</td>
+                <td style="background-color: #FF8000">나쁨</td>
+                <td style="background-color: #FE2E2E">매우나쁨</td>
+              </tr>
+              <tr>
+                <td>pm2.5</td>
+                <td style="background-color: #0080FF">0-15</td>
+                <td style="background-color: #3ADF00">16-35</td>
+                <td style="background-color: #FF8000">36-75</td>
+                <td style="background-color: #FE2E2E">75-</td>
+              </tr>
+              <tr>
+                <td>pm10</td>
+                <td style="background-color: #0080FF">0-30</td>
+                <td style="background-color: #3ADF00">31-80</td>
+                <td style="background-color: #FF8000">81-150</td>
+                <td style="background-color: #FE2E2E">151-</td>
+              </tr>
 
-</table>
+            </table>
           </div>
         </div>
       </div>
@@ -627,7 +664,11 @@
   <!-- Footer -->
   <footer class="py-2 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">배움 받은 곳 : <a href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> - 정말 감사합니다.</a></p>
+      <p class="m-0 text-center text-white">배움 받은 곳 : <a
+          href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> - 정말
+        감사합니다.</a></p>
+      <p class="m-0 text-center text-white">지도-카카오맵/온,습도,미세먼지-openweathermap </p>
+
     </div>
     <!-- /.container -->
   </footer>
