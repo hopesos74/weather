@@ -47,441 +47,411 @@
 
           var x = pos.coords.latitude;
           var y = pos.coords.longitude;
+
           text_x = x - 0.0003;
           text_y = y - 0.0002;
 
-
-
-          var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-            mapOption = {
-              center: new kakao.maps.LatLng(x, y), // 지도의 중심좌표
-              draggable: false,
-              level: 3 // 지도의 확대 레벨
-            };
-
-          var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-          // 마커가 표시될 위치입니다 
           var markerPosition = new kakao.maps.LatLng(x, y);
 
-          // 마커를 생성합니다
-          var marker = new kakao.maps.Marker({
+          // 이미지 지도에 표시할 마커입니다
+          // 이미지 지도에 표시할 마커는 Object 형태입니다
+          var marker = {
             position: markerPosition
+          };
+
+          
+
+          var staticMapContainer = document.getElementById('map'), // 이미지 지도를 표시할 div  
+            staticMapOption = {
+              center: new kakao.maps.LatLng(x, y), // 이미지 지도의 중심좌표
+              level: 3, // 이미지 지도의 확대 레벨
+              marker: marker // 이미지 지도에 표시할 마커 
+            };
+
+          // 이미지 지도를 생성합니다
+          var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+
+
+        
+
+        $.ajax({
+          method: "GET",
+          url: "https://dapi.kakao.com/v2/local/geo/coord2address.json?x=" + y + "&y=" + x + "&input_coord=WGS84",
+          headers: { Authorization: "KakaoAK eaba352137de06ddce13c272d9ce9756" }
+        })
+          .done(function (msg) {
+            console.log(msg);
+            $("#address").append("지번 : " + msg.documents[0].address.address_name + "<br>");
+            $("#info_address").append(msg.documents[0].address.address_name);
+            var address = msg.documents[0].address.address_name;
+
+            $.ajax({
+              method: "GET",
+              url: "https://dapi.kakao.com/v2/local/search/address.json",
+              data: { query: address },
+              headers: { Authorization: "KakaoAK eaba352137de06ddce13c272d9ce9756" }
+            })
+              .done(function (road) {
+                console.log(road);
+                $("#address").append("도로명 : " + road.documents[0].road_address.address_name + "<br>");
+                if (road.documents[0].road_address.building_name) {
+                  $("#address").append("건물명 : " + road.documents[0].road_address.building_name + "<br>");
+                };
+                $("#address").append("우편번호 : " + road.documents[0].road_address.zone_no + "<br>");
+
+              });
           });
 
-          // 마커가 지도 위에 표시되도록 설정합니다
-          marker.setMap(map);
 
 
-          // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
-          var mapTypeControl = new kakao.maps.MapTypeControl();
+        $.ajax({
+          method: "GET",
+          url: "https://api.openweathermap.org/data/2.5/onecall?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
 
-          // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
-          // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
-          map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+        })
+          .done(function (m) {
+            console.log(m);
 
-          // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
-          var zoomControl = new kakao.maps.ZoomControl();
+            $("#temp").append("온도 : " + m.hourly[0].temp + "℃, 습도 : " + m.hourly[0].humidity + "%,&nbsp;");
+            $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity + "%&nbsp;");
+            $("#temp").append("&nbsp;<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
+            $("#top_temp").append("<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
+            $("#temp").append("&nbsp;" + m.hourly[0].weather[0].description + "<br>");
+            $("#temp").append("최대온도 : " + m.daily[0].temp.max + "℃, 최저온도 : " + m.daily[0].temp.min + "℃&nbsp;");
 
-          map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+            var labels = new Array();
+            var hourly_temp = new Array();
+            var daily_lables = new Array();
+            var daily_temp_max = new Array();
+            var daily_temp_min = new Array();
 
-          // 지도에 교통정보를 표시하도록 지도타입을 추가합니다
-          map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);
+            for (i = 0; i < 7; i++) {
+              var date1 = new Date(m.hourly[i].dt * 1000);
 
-          // 아래 코드는 위에서 추가한 교통정보 지도타입을 제거합니다
-          // map.removeOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC); 
-
-          //var iwContent = '<div id="info_address" style="font-size:0.8rem; padding:5px"></div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-            //iwPosition = new kakao.maps.LatLng(text_x, text_y); //인포윈도우 표시 위치입니다
-
-          // 인포윈도우를 생성합니다
-          //var infowindow = new kakao.maps.InfoWindow({
-           // position: iwPosition,
-            //content: iwContent,
-            
-          //});
-
-          // 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
-          //infowindow.open(map, marker);
-
-          $.ajax({
-            method: "GET",
-            url: "https://dapi.kakao.com/v2/local/geo/coord2address.json?x=" + y + "&y=" + x + "&input_coord=WGS84",
-            headers: { Authorization: "KakaoAK eaba352137de06ddce13c272d9ce9756" }
-          })
-            .done(function (msg) {
-              console.log(msg);
-              $("#address").append("지번 : " + msg.documents[0].address.address_name + "<br>");
-              $("#info_address").append(msg.documents[0].address.address_name);
-              var address = msg.documents[0].address.address_name;
-
-              $.ajax({
-                method: "GET",
-                url: "https://dapi.kakao.com/v2/local/search/address.json",
-                data: { query: address },
-                headers: { Authorization: "KakaoAK eaba352137de06ddce13c272d9ce9756" }
-              })
-                .done(function (road) {
-                  console.log(road);
-                  $("#address").append("도로명 : " + road.documents[0].road_address.address_name + "<br>");
-                  if (road.documents[0].road_address.building_name) {
-                    $("#address").append("건물명 : " + road.documents[0].road_address.building_name + "<br>");
-                  };
-                  $("#address").append("우편번호 : " + road.documents[0].road_address.zone_no + "<br>");
-
-                });
-            });
+              var hours = date1.getHours();
 
 
-
-          $.ajax({
-            method: "GET",
-            url: "https://api.openweathermap.org/data/2.5/onecall?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
-
-          })
-            .done(function (m) {
-              console.log(m);
-
-              $("#temp").append("온도 : " + m.hourly[0].temp + "℃, 습도 : " + m.hourly[0].humidity + "%,&nbsp;");
-              $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity + "%&nbsp;");
-              $("#temp").append("&nbsp;<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
-              $("#top_temp").append("<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
-              $("#temp").append("&nbsp;" + m.hourly[0].weather[0].description + "<br>");
-              $("#temp").append("최대온도 : " + m.daily[0].temp.max + "℃, 최저온도 : " + m.daily[0].temp.min + "℃&nbsp;");
-
-              var labels = new Array();
-              var hourly_temp = new Array();
-              var daily_lables = new Array();
-              var daily_temp_max = new Array();
-              var daily_temp_min = new Array();
-
-              for (i = 0; i < 7; i++) {
-                var date1 = new Date(m.hourly[i].dt * 1000);
-
-                var hours = date1.getHours();
+              $("#hour" + i + "").append("&nbsp;" + hours + "시");
 
 
-                $("#hour" + i + "").append("&nbsp;" + hours + "시");
+              $("#icon" + i + "").append("<i class='wi wi-owm-" + m.hourly[i].weather[0].id + "'></i>");
+              $("#temp" + i + "").append("" + m.hourly[i].temp + "°");
+
+              hours = hours + "시";
+              labels.push(hours);
+              hourly_temp.push(m.hourly[i].temp);
 
 
-                $("#icon" + i + "").append("<i class='wi wi-owm-" + m.hourly[i].weather[0].id + "'></i>");
-                $("#temp" + i + "").append("" + m.hourly[i].temp + "°");
+            }
 
-                hours = hours + "시";
-                labels.push(hours);
-                hourly_temp.push(m.hourly[i].temp);
+            for (i = 0; i < 7; i++) {
+              var daily_day = new Date(m.daily[i].dt * 1000);
+              daily_day = daily_day.getDate();
+              daily_day = daily_day + "일";
+              daily_lables.push(daily_day);
+              daily_temp_max.push(m.daily[i].temp.max);
+              daily_temp_min.push(m.daily[i].temp.min);
+              $("#day" + i).append(daily_day);
+              $("#temp_max" + i).append("" + m.daily[i].temp.max + "°");
+              $("#day_icon" + i).append("<i class='wi wi-owm-" + m.daily[i].weather[0].id + "'></i>");
+              $("#temp_min" + i).append(m.daily[i].temp.min + "°");
+              //m.daily[0].weather[0].icon
 
-
-              }
-
-              for (i = 0; i < 7; i++) {
-                var daily_day = new Date(m.daily[i].dt * 1000);
-                daily_day = daily_day.getDate();
-                daily_day = daily_day + "일";
-                daily_lables.push(daily_day);
-                daily_temp_max.push(m.daily[i].temp.max);
-                daily_temp_min.push(m.daily[i].temp.min);
-                $("#day" + i).append(daily_day);
-                $("#temp_max" + i).append("" + m.daily[i].temp.max + "°");
-                $("#day_icon" + i).append("<i class='wi wi-owm-" + m.daily[i].weather[0].id + "'></i>");
-                $("#temp_min" + i).append(m.daily[i].temp.min + "°");
-                //m.daily[0].weather[0].icon
-
-              }
+            }
 
 
-              var ctx = document.getElementById('myChart');
-              var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                  labels: labels,
-                  datasets: [{
-                    label: '시간별 온도',
-                    data: hourly_temp,
-                    backgroundColor: [
-                      'rgba(0, 0, 0, 0)'
-                    ],
-                    borderColor: [
-                      'rgba(255, 99, 132, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
+            var ctx = document.getElementById('myChart');
+            var myChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: '시간별 온도',
+                  data: hourly_temp,
+                  backgroundColor: [
+                    'rgba(0, 0, 0, 0)'
+                  ],
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+
+                responsive: false,
+                tooltips: {
+                  enabled: false
+                },
+                hover: {
+                  animationDuration: 0
+                },
+                animation: {
+                  duration: 1,
+                  onComplete: function () {
+                    var chartInstance = this.chart,
+                      ctx = chartInstance.ctx;
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.fillStyle = 'purple';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    this.data.datasets.forEach(function (dataset, i) {
+                      var meta = chartInstance.controller.getDatasetMeta(i);
+                      meta.data.forEach(function (bar, index) {
+                        var data = dataset.data[index];
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                      });
+                    });
+                  }
+                },
+
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: false
+                    }
                   }]
                 },
-                options: {
-
-                  responsive: false,
-                  tooltips: {
-                    enabled: false
-                  },
-                  hover: {
-                    animationDuration: 0
-                  },
-                  animation: {
-                    duration: 1,
-                    onComplete: function () {
-                      var chartInstance = this.chart,
-                        ctx = chartInstance.ctx;
-                      ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                      ctx.fillStyle = 'purple';
-                      ctx.textAlign = 'center';
-                      ctx.textBaseline = 'bottom';
-
-                      this.data.datasets.forEach(function (dataset, i) {
-                        var meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                          var data = dataset.data[index];
-                          ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                        });
-                      });
-                    }
-                  },
-
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        beginAtZero: false
-                      }
-                    }]
-                  },
-                }
-              });
-
-
-              var ctx = document.getElementById('daily_temp');
-              var daily_temp = new Chart(ctx, {
-                type: 'line',
-                data: {
-                  datasets: [{
-                    label: '최대온도',
-                    data: daily_temp_max,
-                    backgroundColor: [
-                      'rgba(0, 0, 0, 0)'
-                    ],
-                    borderColor: [
-                      'rgba(255, 99, 132, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-
-                  }, {
-                    label: '최저온도',
-                    data: daily_temp_min,
-
-                    backgroundColor: [
-                      'rgba(0, 0, 0, 0)'
-                    ],
-                    borderColor: [
-                      'rgba(33, 150, 243, 1)',
-                      'rgba(54, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1,
-
-                    // Changes this dataset to become a line
-                    type: 'line'
-                  }],
-                  labels: daily_lables
-                },
-                //options: options
-                options: {
-
-                  responsive: false,
-                  tooltips: {
-                    enabled: false
-                  },
-                  hover: {
-                    animationDuration: 0
-                  },
-                  animation: {
-                    duration: 1,
-                    onComplete: function () {
-                      var chartInstance = this.chart,
-                        ctx = chartInstance.ctx;
-                      ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                      ctx.fillStyle = 'purple';
-                      ctx.textAlign = 'center';
-                      ctx.textBaseline = 'bottom';
-
-                      this.data.datasets.forEach(function (dataset, i) {
-                        var meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                          var data = dataset.data[index];
-                          ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                        });
-                      });
-                    }
-                  },
-
-                  scales: {
-                    yAxes: [{
-                      ticks: {
-                        beginAtZero: false
-                      }
-                    }]
-                  },
-                }
-
-              });
-
+              }
             });
 
 
+            var ctx = document.getElementById('daily_temp');
+            var daily_temp = new Chart(ctx, {
+              type: 'line',
+              data: {
+                datasets: [{
+                  label: '최대온도',
+                  data: daily_temp_max,
+                  backgroundColor: [
+                    'rgba(0, 0, 0, 0)'
+                  ],
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
 
-          $.ajax({
-            method: "GET",
-            url: "https://api.openweathermap.org/data/2.5/air_pollution?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
+                }, {
+                  label: '최저온도',
+                  data: daily_temp_min,
 
-          })
-            .done(function (air_pm) {
-              console.log(air_pm);
+                  backgroundColor: [
+                    'rgba(0, 0, 0, 0)'
+                  ],
+                  borderColor: [
+                    'rgba(33, 150, 243, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1,
 
-              if (air_pm.list[0].components.pm2_5 <= 15) {
-                var level = "좋음";
-                var color = "#0080FF";
-                var icon = "<i class='far fa-smile'></i>"
-              } else if (air_pm.list[0].components.pm2_5 <= 35) {
-                var level = "보통";
-                var color = "#3ADF00";
-                var icon = "<i class='far fa-meh'></i>"
-              } else if (air_pm.list[0].components.pm2_5 <= 75) {
-                var level = "나쁨";
-                var color = "#FF8000";
-                var icon = "<i class='far fa-angry'></i>"
-              } else if (air_pm.list[0].components.pm2_5 <= 500) {
-                var level = "매우나쁨";
-                var color = "#FE2E2E";
-                var icon = "<<i class='far fa-tired'></i>"
-              };
+                  // Changes this dataset to become a line
+                  type: 'line'
+                }],
+                labels: daily_lables
+              },
+              //options: options
+              options: {
 
-              if (air_pm.list[0].components.pm10 <= 30) {
-                var pm10_level = "좋음";
-                var pm10_color = "#0080FF";
-                var pm10_icon = "<i class='far fa-smile'></i>"
-              } else if (air_pm.list[0].components.pm10 <= 80) {
-                var pm10_level = "보통";
-                var pm10_color = "#3ADF00";
-                var pm10_icon = "<i class='far fa-meh'></i>"
-              } else if (air_pm.list[0].components.pm10 <= 150) {
-                var pm10_level = "나쁨";
-                var pm10_color = "#FF8000";
-                var pm10_icon = "<i class='far fa-angry'></i>"
-              } else if (air_pm.list[0].components.pm10 <= 1000) {
-                var pm10_level = "매우나쁨";
-                var pm10_color = "#FE2E2E";
-                var pm10_icon = "<<i class='far fa-tired'></i>"
-              };
+                responsive: false,
+                tooltips: {
+                  enabled: false
+                },
+                hover: {
+                  animationDuration: 0
+                },
+                animation: {
+                  duration: 1,
+                  onComplete: function () {
+                    var chartInstance = this.chart,
+                      ctx = chartInstance.ctx;
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.fillStyle = 'purple';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
 
-              function getFormatDate(date) {
-                var year = date.getFullYear();              //yyyy
-                var month = (1 + date.getMonth());          //M
-                month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
-                var day = date.getDate();                   //d
-                day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
-                var hour = (date.getHours());                   //d
-                hour = hour >= 10 ? hour : '0' + hour;
-                var min = date.getMinutes();                   //d
-                min = min >= 10 ? min : '0' + min;
+                    this.data.datasets.forEach(function (dataset, i) {
+                      var meta = chartInstance.controller.getDatasetMeta(i);
+                      meta.data.forEach(function (bar, index) {
+                        var data = dataset.data[index];
+                        ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                      });
+                    });
+                  }
+                },
 
-                return year + '-' + month + '-' + day + ',&nbsp;' + hour + ':' + min + ':00';       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: false
+                    }
+                  }]
+                },
               }
 
-              var air_pm_date = new Date(air_pm.list[0].dt * 1000);
-              console.log(air_pm_date);
-              air_pm_date = getFormatDate(air_pm_date);
-
-
-              $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#top_air_pm").append("<SPAN STYLE='background-color:" + color + ";'><i>&nbsp;pm2.5&nbsp;</span>&nbsp;<span style='background-color:" + pm10_color + ";'>&nbsp;pm10&nbsp;</i></span>");
-              //$("#top_pm25").append("PM2.5 : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
-              //$("#top_pm10").append("PM10 : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#time").append("측정시간 : " + air_pm_date + "<br>");
-
             });
 
-          $.ajax({
-            method: "GET",
-            url: "https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
-
-          })
-
-
-            .done(function (daily_pm) {
-              console.log(daily_pm);
-
-              var daily_pm25 = new Array();
-              var daily_pm10 = new Array();
-              var daily_pm_labels = new Array();
-
-              for (i = 0; i < 168; i++) {
-                var daily_pm_day = new Date(daily_pm.list[i].dt * 1000);
-                daily_pm_day = daily_pm_day.getDate();
-                daily_pm_labels.push(daily_pm_day);
-                daily_pm25.push(daily_pm.list[i].components.pm2_5);
-                daily_pm10.push(daily_pm.list[i].components.pm10);
-
-              }
+          });
 
 
 
+        $.ajax({
+          method: "GET",
+          url: "https://api.openweathermap.org/data/2.5/air_pollution?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
 
-              var ctx = document.getElementById('daily_pm');
-              var daily_pm = new Chart(ctx, {
-                type: 'line',
-                data: {
-                  datasets: [{
-                    label: 'PM2.5',
-                    data: daily_pm25,
-                    radius: 0,
+        })
+          .done(function (air_pm) {
+            console.log(air_pm);
 
-                    backgroundColor: [
-                      'rgba(0, 0, 0, 0)'
-                    ],
-                    borderColor: [
-                      'rgba(255, 99, 132, 1)',
+            if (air_pm.list[0].components.pm2_5 <= 15) {
+              var level = "좋음";
+              var color = "#0080FF";
+              var icon = "<i class='far fa-smile'></i>"
+            } else if (air_pm.list[0].components.pm2_5 <= 35) {
+              var level = "보통";
+              var color = "#3ADF00";
+              var icon = "<i class='far fa-meh'></i>"
+            } else if (air_pm.list[0].components.pm2_5 <= 75) {
+              var level = "나쁨";
+              var color = "#FF8000";
+              var icon = "<i class='far fa-angry'></i>"
+            } else if (air_pm.list[0].components.pm2_5 <= 500) {
+              var level = "매우나쁨";
+              var color = "#FE2E2E";
+              var icon = "<<i class='far fa-tired'></i>"
+            };
 
-                    ],
-                    borderWidth: 1
+            if (air_pm.list[0].components.pm10 <= 30) {
+              var pm10_level = "좋음";
+              var pm10_color = "#0080FF";
+              var pm10_icon = "<i class='far fa-smile'></i>"
+            } else if (air_pm.list[0].components.pm10 <= 80) {
+              var pm10_level = "보통";
+              var pm10_color = "#3ADF00";
+              var pm10_icon = "<i class='far fa-meh'></i>"
+            } else if (air_pm.list[0].components.pm10 <= 150) {
+              var pm10_level = "나쁨";
+              var pm10_color = "#FF8000";
+              var pm10_icon = "<i class='far fa-angry'></i>"
+            } else if (air_pm.list[0].components.pm10 <= 1000) {
+              var pm10_level = "매우나쁨";
+              var pm10_color = "#FE2E2E";
+              var pm10_icon = "<<i class='far fa-tired'></i>"
+            };
 
-                  }, {
-                    label: 'PM10',
-                    data: daily_pm10,
-                    radius: 0,
+            function getFormatDate(date) {
+              var year = date.getFullYear();              //yyyy
+              var month = (1 + date.getMonth());          //M
+              month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
+              var day = date.getDate();                   //d
+              day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
+              var hour = (date.getHours());                   //d
+              hour = hour >= 10 ? hour : '0' + hour;
+              var min = date.getMinutes();                   //d
+              min = min >= 10 ? min : '0' + min;
 
-                    backgroundColor: [
-                      'rgba(0, 0, 0, 0)'
-                    ],
-                    borderColor: [
-                      'rgba(33, 150, 243, 1)',
+              return year + '-' + month + '-' + day + ',&nbsp;' + hour + ':' + min + ':00';       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+            }
 
-                    ],
-                    borderWidth: 1,
+            var air_pm_date = new Date(air_pm.list[0].dt * 1000);
+            console.log(air_pm_date);
+            air_pm_date = getFormatDate(air_pm_date);
 
-                    // Changes this dataset to become a line
-                    type: 'line'
-                  }],
-                  labels: daily_pm_labels
-                },
-                //options: options
 
-              });
+            $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
+            $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
+            $("#top_air_pm").append("<SPAN STYLE='background-color:" + color + ";'><i>&nbsp;pm2.5&nbsp;</span>&nbsp;<span style='background-color:" + pm10_color + ";'>&nbsp;pm10&nbsp;</i></span>");
+            //$("#top_pm25").append("PM2.5 : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
+            //$("#top_pm10").append("PM10 : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
+            $("#time").append("측정시간 : " + air_pm_date + "<br>");
+
+          });
+
+        $.ajax({
+          method: "GET",
+          url: "https://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=" + x + "&lon=" + y + "&appid=49c020e9c5d0d8084687f4fbcc283554&units=metric"
+
+        })
+
+
+          .done(function (daily_pm) {
+            console.log(daily_pm);
+
+            var daily_pm25 = new Array();
+            var daily_pm10 = new Array();
+            var daily_pm_labels = new Array();
+
+            for (i = 0; i < 168; i++) {
+              var daily_pm_day = new Date(daily_pm.list[i].dt * 1000);
+              daily_pm_day = daily_pm_day.getDate();
+              daily_pm_labels.push(daily_pm_day);
+              daily_pm25.push(daily_pm.list[i].components.pm2_5);
+              daily_pm10.push(daily_pm.list[i].components.pm10);
+
+            }
+
+
+
+
+            var ctx = document.getElementById('daily_pm');
+            var daily_pm = new Chart(ctx, {
+              type: 'line',
+              data: {
+                datasets: [{
+                  label: 'PM2.5',
+                  data: daily_pm25,
+                  radius: 0,
+
+                  backgroundColor: [
+                    'rgba(0, 0, 0, 0)'
+                  ],
+                  borderColor: [
+                    'rgba(255, 99, 132, 1)',
+
+                  ],
+                  borderWidth: 1
+
+                }, {
+                  label: 'PM10',
+                  data: daily_pm10,
+                  radius: 0,
+
+                  backgroundColor: [
+                    'rgba(0, 0, 0, 0)'
+                  ],
+                  borderColor: [
+                    'rgba(33, 150, 243, 1)',
+
+                  ],
+                  borderWidth: 1,
+
+                  // Changes this dataset to become a line
+                  type: 'line'
+                }],
+                labels: daily_pm_labels
+              },
+              //options: options
+
             });
+          });
         });
       } else {
-        alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.")
-      }
+      alert("이 브라우저에서는 Geolocation이 지원되지 않습니다.")
+    }
     });
 
   </script>
@@ -507,7 +477,7 @@
 
     <!-- Heading Row -->
     <div class="row align-items-center my-5">
-     <div class="col-lg-7">
+      <div class="col-lg-7">
         <div id="map" style="width:100%;height:300px;"></div>
       </div>
 
@@ -677,27 +647,25 @@
   <!-- Footer -->
   <footer class="py-2 bg-dark">
     <div class="container">
-      
 
-         
-        <ins class="kakao_ad_area" style="display:none;" 
-      data-ad-unit    = "DAN-rUra54zbienId5o8" 
-      data-ad-width   = "320" 
-      data-ad-height  = "50"></ins> 
-     <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
-        
-          <p class="m-0 text-center text-white">배움 받은 곳 : <a
-              href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> - 정말
-            감사합니다.</a></p>
-      
+
+
+      <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-rUra54zbienId5o8" data-ad-width="320"
+        data-ad-height="50"></ins>
+      <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+
+      <p class="m-0 text-center text-white">배움 받은 곳 : <a
+          href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> - 정말
+        감사합니다.</a></p>
+
 
 
     </div>
-   
+
     <!-- /.container -->
   </footer>
 
-  
+
 
 
   <!-- Bootstrap core JavaScript -->
