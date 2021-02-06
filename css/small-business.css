@@ -10,11 +10,12 @@ table {
   width: 100%;
   border-top: 1px solid #444444;
   border-collapse: collapse;
-  text-align:center;
+  table-layout: auto;
 }
+
 th, td {
   border-bottom: 1px solid #444444;
   padding: 0px;
-  text-align: cneter;
+  text-align: center;
   font-size:0.8rem;
 }
