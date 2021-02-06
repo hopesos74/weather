@@ -55,7 +55,7 @@
           var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
     mapOption = { 
         center: new kakao.maps.LatLng(x, y), // 지도의 중심좌표
-        draggable: false,
+        //draggable: false,
         level: 3 // 지도의 확대 레벨
     };
 
@@ -390,7 +390,7 @@ map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);
 
               $("#air_pm").append("초미세먼지(PM2.5) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
               $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
-              $("#top_air_pm").append("<SPAN STYLE='background-color:" + color + ";'>pm2.5</span>&nbsp;<span style='background-color:" + pm10_color + ";'>PM10</span>");
+              $("#top_air_pm").append("<SPAN STYLE='background-color:" + color + ";'><i>&nbsp;pm2.5&nbsp;</span>&nbsp;<span style='background-color:" + pm10_color + ";'>&nbsp;pm10&nbsp;</i></span>");
               //$("#top_pm25").append("PM2.5 : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm2_5 + "(" + level + ") &nbsp;" + icon + "&nbsp;&nbsp;</i></font></span><br>");
               //$("#top_pm10").append("PM10 : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + air_pm.list[0].components.pm10 + "(" + pm10_level + ") &nbsp;" + pm10_icon + "&nbsp;&nbsp;</i></font></span><br>");
               $("#time").append("측정시간 : " + air_pm_date + "<br>");
@@ -669,7 +669,9 @@ map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);
           href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> - 정말
         감사합니다.</a></p>
       <p class="m-0 text-center text-white">지도-카카오맵/온,습도,미세먼지-openweathermap </p>
-
+      <p class="m-0 text-center text-white">HTML 템플릿 - <a href="https://startbootstrap.com/template/small-business" target="_blank">startbootstrap.com</a></p>
+      
+      
     </div>
     <!-- /.container -->
   </footer>
