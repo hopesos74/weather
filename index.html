@@ -125,7 +125,7 @@
             var daily_temp_max = new Array();
             var daily_temp_min = new Array();
 
-            for (i = 0; i < 7; i++) {
+            for (i = 0; i < 10; i++) {
               var date1 = new Date(m.hourly[i].dt * 1000);
 
               var hours = date1.getHours();
@@ -477,8 +477,8 @@
 
     <!-- Heading Row -->
     <div class="row align-items-center my-5">
-      <div class="col-lg-7">
-        <div id="map" style="width:100%;height:300px;"></div>
+      <div class="col-lg-7" id="map" style="width:100%;height:300px;">
+        
       </div>
 
 
@@ -512,7 +512,9 @@
                   <td id="hour4"></td>
                   <td id="hour5"></td>
                   <td id="hour6"></td>
-
+                  <td id="hour7"></td>
+                  <td id="hour8"></td>
+                  <td id="hour9"></td>
                 </tr>
 
                 <tr>
@@ -523,7 +525,9 @@
                   <td id="icon4"></td>
                   <td id="icon5"></td>
                   <td id="icon6"></td>
-
+                  <td id="icon7"></td>
+                  <td id="icon8"></td>
+                  <td id="icon9"></td>
                 </tr>
                 <tr>
                   <td id="temp0"></td>
@@ -533,7 +537,9 @@
                   <td id="temp4"></td>
                   <td id="temp5"></td>
                   <td id="temp6"></td>
-
+                  <td id="temp7"></td>
+                  <td id="temp8"></td>
+                  <td id="temp9"></td>
                 </tr>
 
               </tbody>
@@ -655,8 +661,7 @@
       <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
 
       <p class="m-0 text-center text-white">배움 받은 곳 : <a
-          href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> - 정말
-        감사합니다.</a></p>
+          href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a> </a></p>
 
 
 
