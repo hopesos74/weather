@@ -533,12 +533,15 @@
 
         <!-- Heading Row -->
         <div class="row align-items-center my-5">
-            
             <div class="col-lg-7">
-                
+
+                <div id="mapWrap" style="width:100%;height:300px;z-index:1">
                     <div id="map" style="width:100%;height:300px;">
-                   
+                    </div>
+                    <div id="corver" style="width:100%;height:300px;z-index:2;position:absolute;top:0;left:0;opacity:0">
+                    </div>
                 </div>
+
             </div>
 
 
@@ -552,234 +555,238 @@
                 <p id="address"></p>
             </div>
             <!-- /.col-md-4 -->
-        </div>
-        <!-- /.row -->
-        <div class="row">
-            <div class="col-md-4 mb-5">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <canvas id="myChart" style="width:100%;height:250px;"></canvas>
-                    </div>
 
-                    <div class="card-footer" style="padding-left: 0px; padding-right: 0px; width:100%; overflow:auto">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td id="hour0"></td>
-                                    <td id="hour1"></td>
-                                    <td id="hour2"></td>
-                                    <td id="hour3"></td>
-                                    <td id="hour4"></td>
-                                    <td id="hour5"></td>
-                                    <td id="hour6"></td>
-                                    <td id="hour7"></td>
-                                    <td id="hour8"></td>
-                                    <td id="hour9"></td>
-                                </tr>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <canvas id="myChart" style="width:100%;height:250px;"></canvas>
+                        </div>
 
-                                <tr>
-                                    <td id="icon0"></td>
-                                    <td id="icon1"></td>
-                                    <td id="icon2"></td>
-                                    <td id="icon3"></td>
-                                    <td id="icon4"></td>
-                                    <td id="icon5"></td>
-                                    <td id="icon6"></td>
-                                    <td id="icon7"></td>
-                                    <td id="icon8"></td>
-                                    <td id="icon9"></td>
-                                </tr>
-                                <tr>
-                                    <td id="temp0"></td>
-                                    <td id="temp1"></td>
-                                    <td id="temp2"></td>
-                                    <td id="temp3"></td>
-                                    <td id="temp4"></td>
-                                    <td id="temp5"></td>
-                                    <td id="temp6"></td>
-                                    <td id="temp7"></td>
-                                    <td id="temp8"></td>
-                                    <td id="temp9"></td>
-                                </tr>
-                                <tr>
-                                    <td id="humi0"></td>
-                                    <td id="humi1"></td>
-                                    <td id="humi2"></td>
-                                    <td id="humi3"></td>
-                                    <td id="humi4"></td>
-                                    <td id="humi5"></td>
-                                    <td id="humi6"></td>
-                                    <td id="humi7"></td>
-                                    <td id="humi8"></td>
-                                    <td id="humi9"></td>
-                                </tr>
+                        <div class="card-footer"
+                            style="padding-left: 0px; padding-right: 0px; width:100%; overflow:auto">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td id="hour0"></td>
+                                        <td id="hour1"></td>
+                                        <td id="hour2"></td>
+                                        <td id="hour3"></td>
+                                        <td id="hour4"></td>
+                                        <td id="hour5"></td>
+                                        <td id="hour6"></td>
+                                        <td id="hour7"></td>
+                                        <td id="hour8"></td>
+                                        <td id="hour9"></td>
+                                    </tr>
 
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <!-- /.col-md-4 -->
-            <div class="col-md-4 mb-5">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <canvas id="daily_temp" style="width:100%;height:250px;"></canvas>
-                    </div>
-                    <div class="card-footer" style="padding-left: 0px; padding-right: 0px; width:100%; overflow:auto">
+                                    <tr>
+                                        <td id="icon0"></td>
+                                        <td id="icon1"></td>
+                                        <td id="icon2"></td>
+                                        <td id="icon3"></td>
+                                        <td id="icon4"></td>
+                                        <td id="icon5"></td>
+                                        <td id="icon6"></td>
+                                        <td id="icon7"></td>
+                                        <td id="icon8"></td>
+                                        <td id="icon9"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="temp0"></td>
+                                        <td id="temp1"></td>
+                                        <td id="temp2"></td>
+                                        <td id="temp3"></td>
+                                        <td id="temp4"></td>
+                                        <td id="temp5"></td>
+                                        <td id="temp6"></td>
+                                        <td id="temp7"></td>
+                                        <td id="temp8"></td>
+                                        <td id="temp9"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="humi0"></td>
+                                        <td id="humi1"></td>
+                                        <td id="humi2"></td>
+                                        <td id="humi3"></td>
+                                        <td id="humi4"></td>
+                                        <td id="humi5"></td>
+                                        <td id="humi6"></td>
+                                        <td id="humi7"></td>
+                                        <td id="humi8"></td>
+                                        <td id="humi9"></td>
+                                    </tr>
 
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td id="day0"></td>
-                                    <td id="day1"></td>
-                                    <td id="day2"></td>
-                                    <td id="day3"></td>
-                                    <td id="day4"></td>
-                                    <td id="day5"></td>
-                                    <td id="day6"></td>
-
-                                </tr>
-
-                                <tr>
-                                    <td id="temp_max0"></td>
-                                    <td id="temp_max1"></td>
-                                    <td id="temp_max2"></td>
-                                    <td id="temp_max3"></td>
-                                    <td id="temp_max4"></td>
-                                    <td id="temp_max5"></td>
-                                    <td id="temp_max6"></td>
-
-                                </tr>
-                                <tr>
-                                    <td id="day_icon0"></td>
-                                    <td id="day_icon1"></td>
-                                    <td id="day_icon2"></td>
-                                    <td id="day_icon3"></td>
-                                    <td id="day_icon4"></td>
-                                    <td id="day_icon5"></td>
-                                    <td id="day_icon6"></td>
-
-                                </tr>
-                                <tr>
-                                    <td id="temp_min0"></td>
-                                    <td id="temp_min1"></td>
-                                    <td id="temp_min2"></td>
-                                    <td id="temp_min3"></td>
-                                    <td id="temp_min4"></td>
-                                    <td id="temp_min5"></td>
-                                    <td id="temp_min6"></td>
-
-
-                                </tr>
-
-                            </tbody>
-                        </table>
-
-
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- /.col-md-4 -->
-            <div class="col-md-4 mb-5">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <canvas id="daily_pm" style="width:100%;height:250px;"></canvas>
-                    </div>
-                    <div class="card-footer" style="padding-left: 0px; padding-right: 0px; width:100%; overflow:auto">
-                        <table class="pm_table">
-                            <tbody>
+                <!-- /.col-md-4 -->
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <canvas id="daily_temp" style="width:100%;height:250px;"></canvas>
+                        </div>
+                        <div class="card-footer"
+                            style="padding-left: 0px; padding-right: 0px; width:100%; overflow:auto">
 
-                                <tr>
-                                    <td>등급</td>
-                                    <td colspan="8"
-                                        style="border-left: 1px solid #444444; border-bottom: 1px solid #444444;">
-                                        <span style="background-color: #0080FF;"> &nbsp;&nbsp;좋음&nbsp;&nbsp;</span>
-                                        <span style="background-color: #3ADF00;"> &nbsp;&nbsp;보통&nbsp;&nbsp;</span>
-                                        <span style="background-color: #FF8000;"> &nbsp;&nbsp;나쁨&nbsp;&nbsp;</span>
-                                        <span style="background-color: #FE2E2E"> &nbsp;&nbsp;매우나쁨&nbsp;&nbsp;</span>
-                                    </td>
-                                </tr>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td id="day0"></td>
+                                        <td id="day1"></td>
+                                        <td id="day2"></td>
+                                        <td id="day3"></td>
+                                        <td id="day4"></td>
+                                        <td id="day5"></td>
+                                        <td id="day6"></td>
 
-                                <tr>
-                                    <td class="pm_td" style="border-left :0px;">날짜</td>
-                                    <td id="daily_pm_day0" class="pm_td"></td>
-                                    <td id="daily_pm_day1" class="pm_td"></td>
-                                    <td id="daily_pm_day2" class="pm_td"></td>
-                                    <td id="daily_pm_day3" class="pm_td"></td>
-                                    <td id="daily_pm_day4" class="pm_td"></td>
-                                    <td id="daily_pm_day5" class="pm_td"></td>
-                                    <td id="daily_pm_day6" class="pm_td"></td>
-                                    <td id="daily_pm_day7" class="pm_td"></td>
+                                    </tr>
 
-                                </tr>
+                                    <tr>
+                                        <td id="temp_max0"></td>
+                                        <td id="temp_max1"></td>
+                                        <td id="temp_max2"></td>
+                                        <td id="temp_max3"></td>
+                                        <td id="temp_max4"></td>
+                                        <td id="temp_max5"></td>
+                                        <td id="temp_max6"></td>
 
-                                <tr>
-                                    <td class="pm_td" style="border-left :0px;">통합</td>
-                                    <td id="daily_pm250"></td>
-                                    <td id="daily_pm251"></td>
-                                    <td id="daily_pm252"></td>
-                                    <td id="daily_pm253"></td>
-                                    <td id="daily_pm254"></td>
-                                    <td id="daily_pm255"></td>
-                                    <td id="daily_pm256"></td>
-                                    <td id="daily_pm257"></td>
-                                </tr>
+                                    </tr>
+                                    <tr>
+                                        <td id="day_icon0"></td>
+                                        <td id="day_icon1"></td>
+                                        <td id="day_icon2"></td>
+                                        <td id="day_icon3"></td>
+                                        <td id="day_icon4"></td>
+                                        <td id="day_icon5"></td>
+                                        <td id="day_icon6"></td>
 
-                                <tr>
-                                    <td class="pm_td" style="border-left :0px;">PM10</td>
-                                    <td id="daily_pm100"></td>
-                                    <td id="daily_pm101"></td>
-                                    <td id="daily_pm102"></td>
-                                    <td id="daily_pm103"></td>
-                                    <td id="daily_pm104"></td>
-                                    <td id="daily_pm105"></td>
-                                    <td id="daily_pm106"></td>
-                                    <td id="daily_pm107"></td>
-                                </tr>
+                                    </tr>
+                                    <tr>
+                                        <td id="temp_min0"></td>
+                                        <td id="temp_min1"></td>
+                                        <td id="temp_min2"></td>
+                                        <td id="temp_min3"></td>
+                                        <td id="temp_min4"></td>
+                                        <td id="temp_min5"></td>
+                                        <td id="temp_min6"></td>
 
 
+                                    </tr>
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
 
+
+                        </div>
                     </div>
                 </div>
+                <!-- /.col-md-4 -->
+                <div class="col-md-4 mb-5">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <canvas id="daily_pm" style="width:100%;height:250px;"></canvas>
+                        </div>
+                        <div class="card-footer"
+                            style="padding-left: 0px; padding-right: 0px; width:100%; overflow:auto">
+                            <table class="pm_table">
+                                <tbody>
+
+                                    <tr>
+                                        <td>등급</td>
+                                        <td colspan="8"
+                                            style="border-left: 1px solid #444444; border-bottom: 1px solid #444444;">
+                                            <span style="background-color: #0080FF;"> &nbsp;&nbsp;좋음&nbsp;&nbsp;</span>
+                                            <span style="background-color: #3ADF00;"> &nbsp;&nbsp;보통&nbsp;&nbsp;</span>
+                                            <span style="background-color: #FF8000;"> &nbsp;&nbsp;나쁨&nbsp;&nbsp;</span>
+                                            <span style="background-color: #FE2E2E"> &nbsp;&nbsp;매우나쁨&nbsp;&nbsp;</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="pm_td" style="border-left :0px;">날짜</td>
+                                        <td id="daily_pm_day0" class="pm_td"></td>
+                                        <td id="daily_pm_day1" class="pm_td"></td>
+                                        <td id="daily_pm_day2" class="pm_td"></td>
+                                        <td id="daily_pm_day3" class="pm_td"></td>
+                                        <td id="daily_pm_day4" class="pm_td"></td>
+                                        <td id="daily_pm_day5" class="pm_td"></td>
+                                        <td id="daily_pm_day6" class="pm_td"></td>
+                                        <td id="daily_pm_day7" class="pm_td"></td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="pm_td" style="border-left :0px;">통합</td>
+                                        <td id="daily_pm250"></td>
+                                        <td id="daily_pm251"></td>
+                                        <td id="daily_pm252"></td>
+                                        <td id="daily_pm253"></td>
+                                        <td id="daily_pm254"></td>
+                                        <td id="daily_pm255"></td>
+                                        <td id="daily_pm256"></td>
+                                        <td id="daily_pm257"></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="pm_td" style="border-left :0px;">PM10</td>
+                                        <td id="daily_pm100"></td>
+                                        <td id="daily_pm101"></td>
+                                        <td id="daily_pm102"></td>
+                                        <td id="daily_pm103"></td>
+                                        <td id="daily_pm104"></td>
+                                        <td id="daily_pm105"></td>
+                                        <td id="daily_pm106"></td>
+                                        <td id="daily_pm107"></td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-md-4 -->
+
             </div>
-            <!-- /.col-md-4 -->
+            <!-- /.row -->
 
         </div>
-        <!-- /.row -->
-
-    </div>
-    <!-- /.container -->
-
-    <!-- Footer -->
-    <footer class="py-2 bg-dark">
-        <div class="container">
-
-
-
-            <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-rUra54zbienId5o8" data-ad-width="320"
-                data-ad-height="50"></ins>
-            <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
-
-            <p class="m-0 text-center text-white">배움 받은 곳 : <a
-                    href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브 채널</a>
-                </a></p>
-
-
-
-        </div>
-
         <!-- /.container -->
-    </footer>
+
+        <!-- Footer -->
+        <footer class="py-2 bg-dark">
+            <div class="container">
+
+
+
+                <ins class="kakao_ad_area" style="display:none;" data-ad-unit="DAN-rUra54zbienId5o8" data-ad-width="320"
+                    data-ad-height="50"></ins>
+                <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
+
+                <p class="m-0 text-center text-white">배움 받은 곳 : <a
+                        href="https://www.youtube.com/c/%EC%A1%B0%EC%BD%94%EB%94%A9JoCoding" target="_blank">조코딩 유투브
+                        채널</a>
+                    </a></p>
+
+
+
+            </div>
+
+            <!-- /.container -->
+        </footer>
 
 
 
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
