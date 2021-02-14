@@ -109,12 +109,13 @@
             .done(function (m) {
               console.log(m);
 
-              $("#temp").append("온도 : " + m.hourly[0].temp + "℃, 습도 : " + m.hourly[0].humidity + "%,&nbsp;");
-              $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity + "%&nbsp;");
-              $("#temp").append("&nbsp;<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
+              $("#temp").append(m.hourly[0].temp + "℃ &nbsp;" + m.hourly[0].humidity + "%&nbsp;");
+              $("#top_temp").append(m.hourly[0].temp + "° " + m.hourly[0].humidity);
+              $("#temp").append("<img src='http://openweathermap.org/img/wn/"+ m.hourly[0].weather[0].icon +".png'>");
+              //$("#temp").append("&nbsp;<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
               $("#top_temp").append("<i class='wi wi-owm-" + m.hourly[0].weather[0].id + "'></i>");
               $("#temp").append("&nbsp;" + m.hourly[0].weather[0].description + "<br>");
-              $("#temp").append("최대온도 : " + m.daily[0].temp.max + "℃, 최저온도 : " + m.daily[0].temp.min + "℃&nbsp;");
+              $("#temp").append("최대 : " + m.daily[0].temp.max + "℃, 최저 : " + m.daily[0].temp.min + "℃&nbsp;");
 
               var labels = new Array();
               var hourly_temp = new Array();
@@ -349,7 +350,7 @@
                 var pm10_icon = "<i class='far fa-tired'></i>"
               };
 
-              $("#air_pm").append("통합대기상태(AQI) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + pm.data.iaqi.pm25.v + "(" + level + ")&nbsp;" + icon + "&nbsp;</i></font></span><br>");
+              $("#air_pm").append("통합대기(AQI) : <SPAN STYLE='background-color:" + color + ";'><i><font color='white'>&nbsp;" + pm.data.iaqi.pm25.v + "(" + level + ")&nbsp;" + icon + "&nbsp;</i></font></span><br>");
               $("#air_pm").append("미세먼지(PM10) : <SPAN STYLE='background-color:" + pm10_color + ";'><i><font color='white'>&nbsp;" + pm.data.iaqi.pm10.v + "(" + pm10_level + ")&nbsp;" + pm10_icon + "&nbsp;</i></font></span><br>");
               $("#top_air_pm").append("<SPAN STYLE='background-color:" + color + ";'><i>&nbsp;통합대기&nbsp;</span>&nbsp;<span style='background-color:" + pm10_color + ";'>&nbsp;pm10&nbsp;</i></span>");
               $("#time").append("측정시간 : " + pm.data.time.s + "<br>");
