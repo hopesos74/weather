@@ -25,6 +25,28 @@
   <script type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+  <style>
+
+@font-face {
+    font-family: '777Balsamtint';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_nine_@1.1/777Balsamtint.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+   p {
+    font-family: '777Balsamtint';
+    font-size: 1.2rem;
+   }
+
+   td {
+    font-family: '777Balsamtint';
+    font-size: 0.9rem;
+  }
+
+  </style>
+
+ 
 
 
 </head>
@@ -42,8 +64,8 @@
       if (navigator.geolocation) {
         //위치 정보를 얻기
         navigator.geolocation.getCurrentPosition(function (pos) {
-          $('#latitude').html("위도 : " + pos.coords.latitude);     // 위도
-          $('#longitude').html("경도 : " + pos.coords.longitude); // 경도
+          //$('#latitude').html("위도 : " + pos.coords.latitude);     // 위도
+          //$('#longitude').html("경도 : " + pos.coords.longitude); // 경도
 
           var x = pos.coords.latitude;
           var y = pos.coords.longitude;
@@ -190,6 +212,11 @@
                   hover: {
                     animationDuration: 0
                   },
+
+                  fontFamily: {
+                    '777Balsamtint'
+                  },
+
                   animation: {
                     duration: 1,
                     onComplete: function () {
@@ -502,10 +529,10 @@
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand">날씨 어때?</a>
+      <a class="navbar-brand" style="font-family:'777Balsamtint'; font-size: 1.5rem; ">날씨 어때?</a>
       <div>
-        <span id="top_temp" class="navbar-brand" style="font-size:1rem;"></span>
-        <span id="top_air_pm" class="navbar-brand" style="font-size:1rem;"></span>
+        <span id="top_temp" class="navbar-brand" style="font-family: '777Balsamtint'; font-size:1.2rem;"></span>
+        <span id="top_air_pm" class="navbar-brand" style="font-family: '777Balsamtint'; font-size:1.2rem;"></span>
 
         </ul>
       </div>
@@ -529,8 +556,8 @@
         <p id="temp"></p>
         <p id="air_pm"></p>
         <p id="time"></p>
-        <span id="latitude"></span><br>
-        <span id="longitude"></span>
+        <!-- <span id="latitude"></span><br>
+        <span id="longitude"></span> -->
         <p id="address"></p>
       </div>
       <!-- /.col-md-4 -->
